@@ -82,6 +82,72 @@
             padding: 10px;
             border-radius: 4px;
         }
+        
+        /* Touch Controls */
+        .touch-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .touch-controls.show {
+            display: flex;
+        }
+        
+        .touch-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 15px 20px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .touch-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .touch-button:active {
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(0.95);
+        }
+        
+        .touch-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .touch-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 255, 0, 0.8);
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            color: #000;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 10px 15px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+        }
+        
+        .touch-toggle:hover {
+            background: rgba(0, 255, 0, 1);
+            transform: scale(1.05);
+        }
 
         .loading {
             position: absolute;
@@ -129,6 +195,19 @@
         <div class="controls">
             ← → or A D Move | ↑ or W S Jump | Space: Start/Pause | M: Mute | C: Toggle CRT
         </div>
+        
+        <!-- Touch Controls Toggle -->
+        <button class="touch-toggle" id="touchToggle">📱 Touch</button>
+        
+        <!-- Touch Controls -->
+        <div class="touch-controls" id="touchControls">
+            <div class="touch-row">
+                <button class="touch-button" id="leftBtn">←</button>
+                <button class="touch-button" id="jumpBtn">↑</button>
+                <button class="touch-button" id="rightBtn">→</button>
+            </div>
+        </div>
+        
         <div id="loading" class="loading" style="display: none;">
             Loading Game...
         </div>
@@ -313,6 +392,75 @@
                 });
                 
                 this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+                
+                // Touch controls setup
+                this.setupTouchControls();
+            }
+            
+            setupTouchControls() {
+                const touchToggle = document.getElementById('touchToggle');
+                const touchControls = document.getElementById('touchControls');
+                const leftBtn = document.getElementById('leftBtn');
+                const rightBtn = document.getElementById('rightBtn');
+                const jumpBtn = document.getElementById('jumpBtn');
+                
+                // Toggle touch controls
+                touchToggle.addEventListener('click', () => {
+                    touchControls.classList.toggle('show');
+                    touchToggle.textContent = touchControls.classList.contains('show') ? '⌨️ Keys' : '📱 Touch';
+                });
+                
+                // Touch button events
+                leftBtn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.keys['ArrowLeft'] = true;
+                });
+                
+                leftBtn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    this.keys['ArrowLeft'] = false;
+                });
+                
+                rightBtn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.keys['ArrowRight'] = true;
+                });
+                
+                rightBtn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    this.keys['ArrowRight'] = false;
+                });
+                
+                jumpBtn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.handleJump();
+                });
+                
+                // Mouse events for desktop testing
+                leftBtn.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    this.keys['ArrowLeft'] = true;
+                });
+                
+                leftBtn.addEventListener('mouseup', (e) => {
+                    e.preventDefault();
+                    this.keys['ArrowLeft'] = false;
+                });
+                
+                rightBtn.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    this.keys['ArrowRight'] = true;
+                });
+                
+                rightBtn.addEventListener('mouseup', (e) => {
+                    e.preventDefault();
+                    this.keys['ArrowRight'] = false;
+                });
+                
+                jumpBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.handleJump();
+                });
             }
             
             handleKeyPress(e) {
