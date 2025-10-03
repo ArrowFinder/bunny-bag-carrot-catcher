@@ -83,53 +83,93 @@
             border-radius: 4px;
         }
         
-        /* Touch Controls */
+        /* Touch Controls - Outside Game Area */
         .touch-controls {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1000;
             display: none;
-            flex-direction: column;
-            gap: 10px;
         }
         
         .touch-controls.show {
-            display: flex;
+            display: block;
+            pointer-events: auto;
         }
         
         .touch-button {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            border-radius: 8px;
-            color: white;
-            font-size: 18px;
+            position: absolute;
+            background: rgba(0, 255, 0, 0.8);
+            border: 3px solid #00ff00;
+            border-radius: 50%;
+            color: #000;
+            font-size: 24px;
             font-weight: bold;
-            padding: 15px 20px;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
             user-select: none;
             transition: all 0.2s;
-            min-width: 60px;
-            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 255, 0, 0.3);
         }
         
         .touch-button:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.05);
+            background: rgba(0, 255, 0, 1);
+            transform: scale(1.1);
         }
         
         .touch-button:active {
-            background: rgba(255, 255, 255, 0.5);
-            transform: scale(0.95);
+            background: rgba(0, 255, 0, 0.6);
+            transform: scale(0.9);
         }
         
-        .touch-row {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
+        /* Left Button */
+        .touch-left {
+            left: 20px;
+            bottom: 50%;
+            transform: translateY(50%);
+        }
+        
+        /* Right Button */
+        .touch-right {
+            right: 20px;
+            bottom: 50%;
+            transform: translateY(50%);
+        }
+        
+        /* Jump Button */
+        .touch-jump {
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+        }
+        
+        /* Start/Pause Button */
+        .touch-start {
+            left: 50%;
+            top: 20px;
+            transform: translateX(-50%);
+            background: rgba(255, 165, 0, 0.8);
+            border-color: #ffa500;
+            box-shadow: 0 4px 15px rgba(255, 165, 0, 0.3);
+        }
+        
+        .touch-start:hover {
+            background: rgba(255, 165, 0, 1);
+        }
+        
+        .touch-start:active {
+            background: rgba(255, 165, 0, 0.6);
         }
         
         .touch-toggle {
-            position: absolute;
+            position: fixed;
             top: 20px;
             right: 20px;
             background: rgba(0, 255, 0, 0.8);
@@ -142,6 +182,7 @@
             cursor: pointer;
             user-select: none;
             transition: all 0.2s;
+            z-index: 1001;
         }
         
         .touch-toggle:hover {
@@ -199,13 +240,12 @@
         <!-- Touch Controls Toggle -->
         <button class="touch-toggle" id="touchToggle">📱 Touch</button>
         
-        <!-- Touch Controls -->
+        <!-- Touch Controls - Outside Game Area -->
         <div class="touch-controls" id="touchControls">
-            <div class="touch-row">
-                <button class="touch-button" id="leftBtn">←</button>
-                <button class="touch-button" id="jumpBtn">↑</button>
-                <button class="touch-button" id="rightBtn">→</button>
-            </div>
+            <button class="touch-button touch-left" id="leftBtn">←</button>
+            <button class="touch-button touch-right" id="rightBtn">→</button>
+            <button class="touch-button touch-jump" id="jumpBtn">↑</button>
+            <button class="touch-button touch-start" id="startBtn">▶</button>
         </div>
         
         <div id="loading" class="loading" style="display: none;">
@@ -403,6 +443,7 @@
                 const leftBtn = document.getElementById('leftBtn');
                 const rightBtn = document.getElementById('rightBtn');
                 const jumpBtn = document.getElementById('jumpBtn');
+                const startBtn = document.getElementById('startBtn');
                 
                 // Toggle touch controls
                 touchToggle.addEventListener('click', () => {
@@ -410,7 +451,18 @@
                     touchToggle.textContent = touchControls.classList.contains('show') ? '⌨️ Keys' : '📱 Touch';
                 });
                 
-                // Touch button events
+                // Start/Pause button
+                startBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.handleSpaceKey();
+                });
+                
+                startBtn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.handleSpaceKey();
+                });
+                
+                // Left button events
                 leftBtn.addEventListener('touchstart', (e) => {
                     e.preventDefault();
                     this.keys['ArrowLeft'] = true;
@@ -421,22 +473,6 @@
                     this.keys['ArrowLeft'] = false;
                 });
                 
-                rightBtn.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    this.keys['ArrowRight'] = true;
-                });
-                
-                rightBtn.addEventListener('touchend', (e) => {
-                    e.preventDefault();
-                    this.keys['ArrowRight'] = false;
-                });
-                
-                jumpBtn.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    this.handleJump();
-                });
-                
-                // Mouse events for desktop testing
                 leftBtn.addEventListener('mousedown', (e) => {
                     e.preventDefault();
                     this.keys['ArrowLeft'] = true;
@@ -445,6 +481,17 @@
                 leftBtn.addEventListener('mouseup', (e) => {
                     e.preventDefault();
                     this.keys['ArrowLeft'] = false;
+                });
+                
+                // Right button events
+                rightBtn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.keys['ArrowRight'] = true;
+                });
+                
+                rightBtn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    this.keys['ArrowRight'] = false;
                 });
                 
                 rightBtn.addEventListener('mousedown', (e) => {
@@ -457,10 +504,42 @@
                     this.keys['ArrowRight'] = false;
                 });
                 
+                // Jump button events
+                jumpBtn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.handleJump();
+                });
+                
                 jumpBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     this.handleJump();
                 });
+                
+                // Update start button text based on game state
+                this.updateStartButton();
+            }
+            
+            updateStartButton() {
+                const startBtn = document.getElementById('startBtn');
+                if (!startBtn) return;
+                
+                switch (this.state) {
+                    case GAME_STATES.TITLE:
+                        startBtn.textContent = '▶';
+                        break;
+                    case GAME_STATES.PLAYING:
+                        startBtn.textContent = '⏸';
+                        break;
+                    case GAME_STATES.PAUSED:
+                        startBtn.textContent = '▶';
+                        break;
+                    case GAME_STATES.HIT_PAUSE:
+                        startBtn.textContent = '▶';
+                        break;
+                    case GAME_STATES.GAME_OVER:
+                        startBtn.textContent = '🔄';
+                        break;
+                }
             }
             
             handleKeyPress(e) {
@@ -525,24 +604,29 @@
                 this.state = GAME_STATES.PLAYING;
                 this.resetGame();
                 this.mysteryBoxStartTime = Date.now() + 30000; // 30 second delay before first mystery box
+                this.updateStartButton();
             }
             
             pauseGame() {
                 this.state = GAME_STATES.PAUSED;
+                this.updateStartButton();
             }
             
             resumeGame() {
                 this.state = GAME_STATES.PLAYING;
+                this.updateStartButton();
             }
             
             resumeFromHit() {
                 this.state = GAME_STATES.PLAYING;
                 this.hitPauseTime = 0;
+                this.updateStartButton();
             }
             
             restartGame() {
                 this.state = GAME_STATES.TITLE;
                 this.resetGame();
+                this.updateStartButton();
             }
             
             resetGame() {
@@ -579,6 +663,7 @@
             
             gameOver() {
                 this.state = GAME_STATES.GAME_OVER;
+                this.updateStartButton();
                 
                 if (this.score > this.bestScore) {
                     this.bestScore = this.score;
