@@ -1289,11 +1289,6 @@
                 this.ctx.font = 'bold 20px monospace';
                 this.ctx.fillText('← → or A D Move | ↑ or W S Jump', GAME_WIDTH / 2, 420);
                 
-                if (this.bestScore > 0) {
-                    this.ctx.fillStyle = COLORS.carrot;
-                    this.ctx.font = 'bold 18px monospace';
-                    this.ctx.fillText(`Score: ${this.bestScore}`, GAME_WIDTH / 2, 450);
-                }
             }
             
             renderGameplay() {
