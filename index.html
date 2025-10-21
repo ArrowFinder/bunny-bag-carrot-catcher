@@ -1727,19 +1727,19 @@
                 this.ctx.textAlign = 'center';
                 this.ctx.fillText('GAME OVER', GAME_WIDTH / 2, 200);
                 
+                // Make Final Score much more prominent
+                this.ctx.fillStyle = COLORS.carrot;
+                this.ctx.font = 'bold 24px monospace';
+                this.ctx.fillText(`FINAL SCORE: ${this.score}`, GAME_WIDTH / 2, 250);
+                
+                // Other stats in smaller, less prominent text
                 this.ctx.fillStyle = COLORS.text;
-                this.ctx.font = '18px monospace';
-                this.ctx.fillText(`Final Score: ${this.score}`, GAME_WIDTH / 2, 250);
-                this.ctx.fillText(`Highest Level: ${this.difficultyLevel}`, GAME_WIDTH / 2, 280);
+                this.ctx.font = '16px monospace';
+                this.ctx.fillText(`Highest Level: ${this.difficultyLevel}`, GAME_WIDTH / 2, 290);
                 
                 const accuracy = this.totalCarrots > 0 ? Math.round((this.caughtCarrots / this.totalCarrots) * 100) : 0;
-                this.ctx.fillText(`Accuracy: ${accuracy}%`, GAME_WIDTH / 2, 310);
-                this.ctx.fillText(`Max Combo: ${this.maxCombo}`, GAME_WIDTH / 2, 340);
-                
-                if (this.bestScore > 0) {
-                    this.ctx.fillStyle = COLORS.carrot;
-                    this.ctx.fillText(`Best Score: ${this.bestScore}`, GAME_WIDTH / 2, 380);
-                }
+                this.ctx.fillText(`Accuracy: ${accuracy}%`, GAME_WIDTH / 2, 320);
+                this.ctx.fillText(`Max Combo: ${this.maxCombo}`, GAME_WIDTH / 2, 350);
                 
                 this.ctx.fillStyle = COLORS.ui;
                 this.ctx.font = 'bold 16px monospace';
